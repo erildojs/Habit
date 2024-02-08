@@ -1,12 +1,12 @@
+import 'dotenv/config'
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import { env } from "./env";
 
 const app = Fastify()
 app.register(cors)
 
 app.listen({
-  port: env.PORT
+  port: Number(process.env.NODE_PORT)
 }).then(() => {
   console.log('server started!');
 })
