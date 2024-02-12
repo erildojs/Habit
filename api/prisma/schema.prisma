@@ -10,7 +10,7 @@ generator erd {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -30,7 +30,7 @@ model HabitWeekDays {
   week_day Int
   habit    Habit  @relation(fields: [habit_id], references: [id])
 
-  @@index([habit_id, week_day])
+  @@unique([habit_id, week_day])
   @@map("habit_week_days")
 }
 
@@ -39,8 +39,8 @@ model Day {
   date      DateTime
   dayHabits DayHabit[]
 
-  @@index([date])
-  @@map("day")
+  @@unique([date])
+  @@map("days")
 }
 
 model DayHabit {
@@ -51,6 +51,6 @@ model DayHabit {
   day   Day   @relation(fields: [day_id], references: [id])
   habit Habit @relation(fields: [habit_id], references: [id])
 
-  @@index([day_id, habit_id])
+  @@unique([day_id, habit_id])
   @@map("day_habits")
 }

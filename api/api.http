@@ -5,3 +5,7 @@ Content-Type: application/json
   "title": "Beber 1L de agua",
   "weekDays": [0, 5]
 }
+
+###
+GET http://localhost:3333/day?date=2024-02-11T00:00:00.000z
+Content-Type: application/json
