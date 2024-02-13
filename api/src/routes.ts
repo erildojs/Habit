@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import { FastifyInstance } from "fastify";
 import z from "zod";
 import { prisma } from "./lib/prisma";
@@ -18,7 +18,7 @@ export async function appRoutes(app: FastifyInstance) {
         title,
         created_at: today,
         weekDays: {
-          create: weekDays.map((weekDay) => {
+          create: weekDays.map((weekDay) => {       
             return {
               week_day: weekDay
             }
@@ -33,7 +33,7 @@ export async function appRoutes(app: FastifyInstance) {
       date: z.coerce.date()
     })
     const { date } = getDayParams.parse(request.query)
-    const parsedDate = dayjs(date).startOf('date')
+    const parsedDate = dayjs(date).startOf('day')
     const weekDay = parsedDate.get('day')
     //todos habitos possiveis daquele dia
     const possibleHabits = await prisma.habit.findMany({
@@ -61,5 +61,49 @@ export async function appRoutes(app: FastifyInstance) {
       return dayHabit.habit_id
     })
     return { possibleHabits, completedHabits }
+  })
+
+  app.patch('/habits/:id/toggle', async (request) => {
+    const toggleHabitParam = z.object({
+      id: z.string().uuid()
+    })
+    const {id} = toggleHabitParam.parse(request.params)
+    const today = dayjs().startOf('day').toDate()
+    let day = await prisma.day.findUnique({
+      where: {
+        date: today
+      }
+    })
+    if(!day) {
+      day = await prisma.day.create({
+        data: {
+          date: today
+        }
+      })
+    }
+    const dayHabit = await prisma.dayHabit.findUnique({
+      where: {
+        day_id_habit_id: {
+          day_id: day.id,
+          habit_id: id
+        }
+      }
+    })
+    if(dayHabit) {
+      //remover a marcacao de completo
+      await prisma.dayHabit.delete({
+        where: {
+          id: dayHabit.id
+        }
+      })
+    }else {
+      //completar o habito nesse dia
+    await prisma.dayHabit.create({
+      data: {
+        day_id: day.id,
+        habit_id: id
+      }
+    })
+    }
   })
 }
