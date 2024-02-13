@@ -12,3 +12,6 @@ Content-Type: application/json
 
 ###
 PATCH http://localhost:3333/habits/ee61799e-3527-494b-911c-0b7eb87d0245/toggle
+
+###
+GET http://localhost:3333/summary
