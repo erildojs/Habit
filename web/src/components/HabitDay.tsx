@@ -1,6 +1,37 @@
 
-export function HabitDay() {
+import * as Popover from '@radix-ui/react-popover';
+import { ProgressBar } from './ProgressBar';
+import clsx from 'clsx';
+
+interface HabitDayProps {
+  completed: number
+  amount: number
+}
+
+export function HabitDay({completed, amount}: HabitDayProps) {
+  const completedPercentage = Math.round((completed / amount) * 100)
+
   return (
-    <div className="bg-zinc-900 h-10 w-10 border-2 border-zinc-800 rounded-lg"></div>
+    <Popover.Root>
+      <Popover.Trigger className={clsx('h-10 w-10 border-2 rounded-lg', {
+      'bg-zinc-900 border-zinc-800': completedPercentage === 0,
+      'bg-violet-900 bg-violet-700': completedPercentage > 0 && completedPercentage < 20,
+      'bg-violet-800 bg-violet-600': completedPercentage >= 20 && completedPercentage < 40,
+      'bg-violet-700 bg-violet-500': completedPercentage >= 40 && completedPercentage < 60,
+      'bg-violet-600 bg-violet-500': completedPercentage >= 60 && completedPercentage < 80,
+      'bg-violet-500 bg-violet-400': completedPercentage >= 80,  
+      })} />
+
+      <Popover.Portal>
+        <Popover.Content className='min-w-[320px] p-6 bg-zinc-900 rounded-lg flex flex-col'>
+          <span className="font-bold text-zinc-400">Terca feira</span>
+          <span className="mt-1 font-extrabold leading-tight text-3xl">14/02</span>
+
+          <ProgressBar progress={completedPercentage} />
+          <Popover.Arrow height={8} width={16} className='fill-zinc-900'/>
+        </Popover.Content>
+      </Popover.Portal>
+     
+    </Popover.Root>
   )
 }
